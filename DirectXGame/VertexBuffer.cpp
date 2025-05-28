@@ -39,7 +39,7 @@ void VertexBuffer::Create(const UINT size, const UINT stride) {
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	// リソースの先頭アドレスから使う
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
+	// 使用するリソースのサイズは頂点size分のサイズ
 	vertexBufferView.SizeInBytes = size;
 	// 1つの頂点のサイズ
 	vertexBufferView.StrideInBytes = stride;
