@@ -33,10 +33,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	RootSignature rs;
 	rs.Create();
 
-	
-
-	
-
 	// 頂点シェーダの読み込みとコンパイル
 	Shader vs;
 	vs.LoadDxc(L"Resources/shaders/TestVS.hlsl", L"vs_6_0");
@@ -84,9 +80,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// 描画終了
 		dxCommon->PostDraw();
 	}
-
-	// 解放処理
-	//vertexResource->Release();
 
 	// エンジンの終了処理
 	KamataEngine::Finalize();
