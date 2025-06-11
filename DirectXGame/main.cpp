@@ -59,14 +59,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	    {-1.0f,  1.0f, 0.0f, 1.0f}, // 左上
 	    { 1.0f,  1.0f, 0.0f, 1.0f}, // 右上
 	    { 1.0f, -1.0f, 0.0f, 1.0f}, // 右下
-	    {-1.0f,  1.0f, 0.0f, 1.0f}, // 左上
-	    { 1.0f, -1.0f, 0.0f, 1.0f}, // 右下
+	    vertices[0],
+	    vertices[2],
 	    {-1.0f, -1.0f, 0.0f, 1.0f}, // 左下
 	};
 
 	// VertexBuffer(VertexResource, VertexResourceView)の生成
 	VertexBuffer vb;
-	vb.Create(sizeof(Vector4) * 6, sizeof(Vector4));
+	vb.Create(sizeof(vertices), sizeof(vertices[0]));
 
 	// 頂点リソースにデータを書き込む -----
 	VertexData* pGpuVertices = nullptr;
