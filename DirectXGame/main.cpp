@@ -58,10 +58,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	VertexData vertices[] = {
 	    {-1.0f,  1.0f, 0.0f, 1.0f}, // 左上
 	    { 1.0f,  1.0f, 0.0f, 1.0f}, // 右上
-	    { 1.0f, -1.0f, 0.0f, 1.0f}, // 右下
-	    vertices[0],
-	    vertices[2],
 	    {-1.0f, -1.0f, 0.0f, 1.0f}, // 左下
+	    {1.0f,  -1.0f, 0.0f, 1.0f}, // 右下
 	};
 
 	// VertexBuffer(VertexResource, VertexResourceView)の生成
@@ -78,7 +76,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 頂点インデックスデータの準備
 	uint16_t indices[] = {
-	    0, 1, 2, 3, 4, 5,
+	    0, 1, 2, 1, 3, 2,
 	};
 
 	// IndexBuffer(IndexResource, IndexResourceView)の生成
