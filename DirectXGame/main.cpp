@@ -127,7 +127,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	device->CreateRenderTargetView(
 	    renderTextureResource, // Viewと関連付けたいリソース
-	    nullptr,               // RTVの詳細情報
+	    nullptr,               // RTVの詳細情報(Desc:Description, 構成内容の記述)
 	                           // ※RTVの場合 nullptrにするとDirectX12が自動で推測してくれる
 	    rtvHandleCPU           // RTV用ディスクリプタヒープのCPUHandle
 	);
@@ -140,9 +140,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 1. DSV用のDescriptorHeapの作成
 	ID3D12DescriptorHeap* dsvDescriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC dsvDescriptorHeapDesc{};
-	dsvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	dsvDescriptorHeapDesc.NumDescriptors = 1;
-	dsvDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	dsvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;   // HeapType
+	dsvDescriptorHeapDesc.NumDescriptors = 1;                      // HeapTypeの個数
+	dsvDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; // DSVはshaderで触らないとする
 
 	hr = device->CreateDescriptorHeap(&dsvDescriptorHeapDesc, IID_PPV_ARGS(&dsvDescriptorHeap));
 	assert(SUCCEEDED(hr));
@@ -153,8 +153,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 2. DSV用のViewの生成
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;                // 基本的にResourceに合わせる
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; // 2DTexture
 
 	// DSVHeapの先頭にDSVを作る
 	device->CreateDepthStencilView(depthStencilResource, &dsvDesc, dsvHandleCPU);
@@ -163,8 +163,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 1. SRV用のDesCriptorHeapの作成
 	ID3D12DescriptorHeap* srvDescriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC srvDescriptorHeapDesc = {};
-	srvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	srvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;     // SRV
+	srvDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // PixelShaderから見える
 	srvDescriptorHeapDesc.NumDescriptors = 1;
 
 	hr = device->CreateDescriptorHeap(&srvDescriptorHeapDesc, IID_PPV_ARGS(&srvDescriptorHeap));
@@ -176,14 +176,14 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 2. SRV(Shader Resorce View)の作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;                           // RenderTargetResourceと同じにする
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING; // RGBA値をそのままShaderに対応させる
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;                      // 2Dテクスチャ
+	srvDesc.Texture2D.MipLevels = 1;                                            // MipLevelは1しかない
 
 	device->CreateShaderResourceView(
 	    renderTextureResource, // Viewと関連付けたいリソース
-	    &srvDesc,              // SRVの詳細情報
+	    &srvDesc,              // SRVの詳細情報(Desc:Description, 構成内容の記述)
 	    srvHandleCPU           // SRV用のディスクリプタヒープのCPUHandle
 	);
 
@@ -196,12 +196,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// TransitionBarrierをSRV⇒RTVに設定する
 		D3D12_RESOURCE_BARRIER barrier{};
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; // TranslationBarrierの設定
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;      // フラグはNoneにしておく
-		barrier.Transition.pResource = renderTextureResource;  // バリアを張る対象のリソース
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		commandList->ResourceBarrier(1, &barrier); // バリアを張る
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                       // TranslationBarrierの設定
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;                            // フラグはNoneにしておく
+		barrier.Transition.pResource = renderTextureResource;                        // バリアを張る対象のリソース
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; // 遷移前
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;          // 遷移後
+		commandList->ResourceBarrier(1, &barrier);                                   // バリアを張る
 
 		// 描画先のRTVとDSVを設定する
 		commandList->OMSetRenderTargets(1, &rtvHandleCPU, false, &dsvHandleCPU);
@@ -212,8 +212,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		viewport.Height = WinApp::kWindowHeight;
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
-		viewport.MinDepth = 0.0f;
-		viewport.MaxDepth = 1.0f;
+		viewport.MinDepth = 0.0f; // 深度の最小値
+		viewport.MaxDepth = 1.0f; // 深度の最大値
 
 		commandList->RSSetViewports(1, &viewport);
 
@@ -260,12 +260,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		dxCommon->PostDraw();
 
 		// TransitionBarrierを元に戻し、PixelShaderが扱えるようにする
-		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION; // TranslationBarrierの設定
-		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;      // フラグはNoneにしておく
-		barrier.Transition.pResource = renderTextureResource;  // バリアを張る対象のリソース
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		commandList->ResourceBarrier(1, &barrier); // バリアを張る
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                      // TranslationBarrierの設定
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;                           // フラグはNoneにしておく
+		barrier.Transition.pResource = renderTextureResource;                       // バリアを張る対象のリソース
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;        // 遷移前
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; // 遷移後
+		commandList->ResourceBarrier(1, &barrier);                                  // バリアを張る
 	}
 
 	// 解放
@@ -376,14 +376,15 @@ ID3D12Resource* CreateRenderTextureResource(ID3D12Device* device, uint32_t width
 ID3D12Resource* createDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height) { 
 	// 1. 生成するDepthStencilTextureのDescの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width;                                   // RenderTextureの幅
+	resourceDesc.Width = width;                                   // Textureの幅
 	resourceDesc.Height = height;                                 // Textureの高さ
 	resourceDesc.MipLevels = 1;                                   // mipmapの数
-	resourceDesc.DepthOrArraySize = 1;                            // 奥行 or 配列Textureの配列数
-	resourceDesc.Format = DXGI_FORMAT_D32_FLOAT;                  // TextureのFormat
+	resourceDesc.DepthOrArraySize = 1;                            // Textureの配列数
+	resourceDesc.Format = DXGI_FORMAT_D32_FLOAT;                  // DepthStencilとして利用可能なフォーマット
+	                                                              // ※kamataEngineと合わせる
 	resourceDesc.SampleDesc.Count = 1;                            // サンプリングカウント
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;  // Textureの時限数。
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // RenderTargetとして使う通知
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;  // ２次元
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; // DepthStencilとして使う通知
 	
 	// 2. 利用するHeapの設定
 	D3D12_HEAP_PROPERTIES heapProperties{};
@@ -393,6 +394,7 @@ ID3D12Resource* createDepthStencilTextureResource(ID3D12Device* device, int32_t 
 	D3D12_CLEAR_VALUE depthClearValue{};
 	depthClearValue.DepthStencil.Depth = 1.0f;      // 1.0f(最大値)でクリア
 	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT; // Zバッファ形式、resourceと合わせる
+	                                                // ※
 
 	// 3. Resourceの生成
 	ID3D12Resource* resource = nullptr;

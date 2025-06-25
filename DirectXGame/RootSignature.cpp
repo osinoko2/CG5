@@ -22,9 +22,9 @@ void RootSignature::Create() {
 	// デスクリプタレンジ
 	D3D12_DESCRIPTOR_RANGE srvDescRange[1]{};
 	// t0 レジスタを利用可能にする
-	srvDescRange[0].BaseShaderRegister = 0;
-	srvDescRange[0].NumDescriptors = 1;
-	srvDescRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	srvDescRange[0].BaseShaderRegister = 0;                      // 0から始まる
+	srvDescRange[0].NumDescriptors = 1;                          // 数は1つ
+	srvDescRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
 	srvDescRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	
 	// RootParameterの用意
@@ -36,8 +36,8 @@ void RootSignature::Create() {
 	rootParameters[0].DescriptorTable.pDescriptorRanges = srvDescRange;             // 拡張しやすくする
 	rootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(srvDescRange); // RangeTable数
 
-	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
+	descriptionRootSignature.pParameters = rootParameters;                          // ルートパラメータ配列へのポインタ
+	descriptionRootSignature.NumParameters = _countof(rootParameters);              // 配列の長さ
 
 	// Samplerの設定
 	D3D12_STATIC_SAMPLER_DESC staticsamplers[1] = {};
@@ -47,7 +47,7 @@ void RootSignature::Create() {
 	staticsamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
 	staticsamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;     // 比較しない
 	staticsamplers[0].MaxLOD = D3D12_FLOAT32_MAX;                       // ありったけのMipMapを使う
-	staticsamplers[0].ShaderRegister = 0;                               // レジスタ番号0を使う
+	staticsamplers[0].ShaderRegister = 0;                               // レジスタ番号0を使う(s0)
 	staticsamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 
 	descriptionRootSignature.pStaticSamplers = staticsamplers;
