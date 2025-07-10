@@ -49,7 +49,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ピクセルシェーダの読み込みとコンパイル
 	Shader ps;
-	ps.LoadDxc(L"Resources/shaders/DepthBasedOutline.PS.hlsl", L"ps_6_0");
+	ps.LoadDxc(L"Resources/shaders/RadialBlur.PS.hlsl", L"ps_6_0");
 	assert(ps.GetDxcBlob() != nullptr);
 
 	// PipelineState作成
@@ -188,13 +188,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	    srvHandleCPU           // SRV用のディスクリプタヒープのCPUHandle
 	);
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
-	// DXGI_FORMAT_D24_UNORM_S8_UINTのDepthを読むときはDXGI_FORMAT_R24_UNORM_X8TYPELESS
-	depthTextureSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-	depthTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	depthTextureSrvDesc.Texture2D.MipLevels = 1;
-	device->CreateShaderResourceView(depthStencilResource, &depthTextureSrvDesc, srvHandleCPU);
+	//D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc{};
+	//// DXGI_FORMAT_D24_UNORM_S8_UINTのDepthを読むときはDXGI_FORMAT_R24_UNORM_X8TYPELESS
+	//depthTextureSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	//depthTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	//depthTextureSrvDesc.Texture2D.MipLevels = 1;
+	//device->CreateShaderResourceView(depthStencilResource, &depthTextureSrvDesc, srvHandleCPU);
 
 	// アプリで利用する3Dモデル
 	// 被写体の準備
@@ -228,10 +228,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                       // TranslationBarrierの設定
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;                            // フラグはNoneにしておく
 		barrier.Transition.pResource = renderTextureResource;                        // バリアを張る対象のリソース
-		//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; // 遷移前
-		//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;          // 遷移後
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;           // 遷移前
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;  // 遷移後
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; // 遷移前
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;          // 遷移後
+		//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;           // 遷移前
+		//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;  // 遷移後
 		commandList->ResourceBarrier(1, &barrier);                                   // バリアを張る
 
 		// 描画先のRTVとDSVを設定する
@@ -273,10 +273,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                      // TranslationBarrierの設定
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;                           // フラグはNoneにしておく
 		barrier.Transition.pResource = renderTextureResource;                       // バリアを張る対象のリソース
-		//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;        // 遷移前
-		//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; // 遷移後
-		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;// 遷移前
-		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;           // 遷移後
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;        // 遷移前
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE; // 遷移後
+		//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;// 遷移前
+		//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;           // 遷移後
 		commandList->ResourceBarrier(1, &barrier);                                  // バリアを張る
 
 		// 描画開始

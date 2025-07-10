@@ -40,7 +40,7 @@ void RootSignature::Create() {
 	descriptionRootSignature.NumParameters = _countof(rootParameters);              // 配列の長さ
 
 	// Samplerの設定
-	D3D12_STATIC_SAMPLER_DESC staticsamplers[2] = {};
+	D3D12_STATIC_SAMPLER_DESC staticsamplers[1] = {};
 	staticsamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;         // バイリニアフィルタ
 	staticsamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
 	staticsamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
@@ -50,14 +50,14 @@ void RootSignature::Create() {
 	staticsamplers[0].ShaderRegister = 0;                               // レジスタ番号0を使う(s0)
 	staticsamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	
-	staticsamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;          // ポイントフィルタ
-	staticsamplers[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
-	staticsamplers[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
-	staticsamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
-	staticsamplers[1].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;     // 比較しない
-	staticsamplers[1].MaxLOD = D3D12_FLOAT32_MAX;                       // ありったけのMipMapを使う
-	staticsamplers[1].ShaderRegister = 0;                               // レジスタ番号0を使う(s0)
-	staticsamplers[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // PixelShaderで使う
+	//staticsamplers[1].Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;          // ポイントフィルタ
+	//staticsamplers[1].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
+	//staticsamplers[1].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
+	//staticsamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
+	//staticsamplers[1].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;     // 比較しない
+	//staticsamplers[1].MaxLOD = D3D12_FLOAT32_MAX;                       // ありったけのMipMapを使う
+	//staticsamplers[1].ShaderRegister = 0;                               // レジスタ番号0を使う(s0)
+	//staticsamplers[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // PixelShaderで使う
 
 	descriptionRootSignature.pStaticSamplers = staticsamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticsamplers);
