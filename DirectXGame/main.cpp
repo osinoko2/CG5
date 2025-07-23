@@ -8,6 +8,7 @@
 
 #include <Windows.h>
 #include <d3dcompiler.h>
+#include <cassert>
 
 using namespace KamataEngine;
 
@@ -49,7 +50,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// ピクセルシェーダの読み込みとコンパイル
 	Shader ps;
-	ps.LoadDxc(L"Resources/shaders/RadialBlur.PS.hlsl", L"ps_6_0");
+	ps.LoadDxc(L"Resources/shaders/TestPS.hlsl", L"ps_6_0");
 	assert(ps.GetDxcBlob() != nullptr);
 
 	// PipelineState作成
@@ -102,7 +103,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// Resource生成, Heap生成, View生成 で再利用される変数の準備
 	ID3D12Device* device = dxCommon->GetDevice();
-	HRESULT hr;
+	[[maybe_unused]] HRESULT hr;
 
 	// RenderTexture関係
 	// 0. RenderTextureResiurceの作成
@@ -399,7 +400,7 @@ ID3D12Resource* CreateRenderTextureResource(ID3D12Device* device, uint32_t width
 
 	// 4. RenderTextureResourceの生成
 	ID3D12Resource* resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 	    &heapProperties,                            // Heapの設定
 	    D3D12_HEAP_FLAG_NONE,                       // Heap の特殊な設定
 	    &resourceDesc,                              // Resourceの設定
@@ -437,7 +438,7 @@ ID3D12Resource* createDepthStencilTextureResource(ID3D12Device* device, int32_t 
 
 	// 3. Resourceの生成
 	ID3D12Resource* resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 	    &heapProperties,                  // Heapの設定
 	    D3D12_HEAP_FLAG_NONE,             // Heap の特殊な設定
 	    &resourceDesc,                    // Resourceの設定

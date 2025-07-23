@@ -1,5 +1,6 @@
 #include "RootSignature.h"
 #include "KamataEngine.h" // DirectXCommon
+#include <cassert>
 
 using namespace KamataEngine;
 
@@ -27,6 +28,11 @@ void RootSignature::Create() {
 	srvDescRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
 	srvDescRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	
+	//srvDescRange[1].BaseShaderRegister = 1;                      // 0から始まる
+	//srvDescRange[1].NumDescriptors = 1;                          // 数は1つ
+	//srvDescRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV
+	//srvDescRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	
 	// RootParameterの用意
 	// 複数設定できるので配列の構造をしている。
 	D3D12_ROOT_PARAMETER rootParameters[1]{};
@@ -35,6 +41,11 @@ void RootSignature::Create() {
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;             // PixelShaderで使う
 	rootParameters[0].DescriptorTable.pDescriptorRanges = srvDescRange;             // 拡張しやすくする
 	rootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(srvDescRange); // RangeTable数
+
+	//rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;   // DescriptorTable
+	//rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;             // PixelShaderで使う
+	//rootParameters[1].DescriptorTable.pDescriptorRanges = srvDescRange;             // 拡張しやすくする
+	//rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(srvDescRange); // RangeTable数
 
 	descriptionRootSignature.pParameters = rootParameters;                          // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);              // 配列の長さ
@@ -56,15 +67,15 @@ void RootSignature::Create() {
 	//staticsamplers[1].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;       // 0.0～1.0の範囲外をリピート
 	//staticsamplers[1].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;     // 比較しない
 	//staticsamplers[1].MaxLOD = D3D12_FLOAT32_MAX;                       // ありったけのMipMapを使う
-	//staticsamplers[1].ShaderRegister = 0;                               // レジスタ番号0を使う(s0)
-	//staticsamplers[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // PixelShaderで使う
+	//staticsamplers[1].ShaderRegister = 1;                               // レジスタ番号0を使う(s0)
+	//staticsamplers[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 
 	descriptionRootSignature.pStaticSamplers = staticsamplers;
 	descriptionRootSignature.NumStaticSamplers = _countof(staticsamplers);
 
 	ID3DBlob* signatureBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	[[maybe_unused]] HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED(hr)) {
 		DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
