@@ -1,7 +1,8 @@
 # CG5 評価課題1
 ## 追加した要素
-- Vignetting(Viganetting.PS)
-- BoxFilter()
+- GrayScale
+- Vignetting
+- BoxFilter
 - GaussianFilter
 - LuminanceBasedOutline
     
